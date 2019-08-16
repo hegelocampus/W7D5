@@ -1,7 +1,6 @@
+DROP TABLE cattoys;
 DROP TABLE cats;
 DROP TABLE toys;
-DROP TABLE cattoys;
-
 
 CREATE TABLE cats (
   id SERIAL PRIMARY KEY,
@@ -72,6 +71,61 @@ INSERT INTO
 VALUES 
   ('feather', 3, 'orange');
 
+
+
+
+INSERT INTO
+  cattoys
+  (cat_id, toy_id)
+VALUES
+  (1, 1), (2, 2), (3, 3), (4, 4), (5, 5);
+
+/*
+INSERT INTO
+  cattoys
+  (toy_id)
+VALUES
+  (
+    SELECT id
+    FROM toys
+    WHERE name = 'bowl');
+
+
+INSERT INTO
+  cattoys
+  (cat_id, toy_id)
+VALUES
+  ((SELECT id
+    FROM cats
+    WHERE name IN ('Loretta', 'Norman')),
+    (SELECT id
+    FROM toys
+    WHERE name = 'feather'));
+    
+
+INSERT INTO
+  cattoys
+  (cat_id, toy_id)
+VALUES
+  ( 
+    SELECT id
+    FROM toys
+    WHERE name = 'bird thing');
+
+
+INSERT INTO
+  cattoys
+  (cat_id, toy_id)
+VALUES
+  ((SELECT id
+    FROM cats
+    WHERE name = 'Fern'),
+    (SELECT id
+    FROM toys
+    WHERE name = 'yo-yo'));
+*/  
+
+
 --   COPY toys (name, price, color) FROM stdin;
 --   yo-yo 4 black 
 --   bowl 2 white 
@@ -81,3 +135,9 @@ VALUES
 
 
 
+-- UPDATE
+--   users
+-- SET
+--   name = 'Eddard Stark', house = 'Winterfell'
+-- WHERE
+--   name = 'Ned Stark';

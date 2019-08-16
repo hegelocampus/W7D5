@@ -46,6 +46,7 @@ Important:In order to ensure you can reseed (if you need to recreate any tables)
 However, you'll need to make sure you're dropping the tables in the right order. If you drop a table that is dependent upon by a foreign key in another table, you will get an error telling you you've violated the foreign key constraint.
 
 Now go into your meowtime database and try making some basic queries to make sure you seeding worked as intended. Try finding all the cats of a certain color or breed. Then find all toys below a certain price, and finally finding all toys that belong to a certain cat.
+
 Phase 1a: Inserting and Updating your Database Using SQL
 
 Now that you've created your own tables let's try updating and deleting records within that table. Go into psql meowtime and update the color of one of your toys. Then query that toy in the database to make sure the color has changed.
@@ -63,6 +64,7 @@ DETAIL:  Key (id)=(4045) is still referenced from table "cattoys".
 This error is warning you that your cattoys table needs a particular toy (in this case the Pear toy) to exist in order to maintain data integrity. Otherwise you would have a row of cattoys.toy_id pointing to a toy that didn't exist. It is never a good idea to completely remove a foreign key constraint from your tables because you can lose data integrity between tables. However, you can alter your foreign key restraint so that if you deleted a toy it would also delete all references to that toy in other tables. We'll cover this concept more when you learn Rails- but if you are curious how it could be done in PostgreSQL read here.
 
 Make sure you always have a WHERE in your UPDATE and DELETE SQL statements. Otherwise all of your rows will be updated or deleted!
+
 Phase 2: Measuring Performance
 
 By this point you've written many SQL queries. You also know that one query can be written in a variety of different ways and still get the same results (i.e. using subqueries vs. joins) and you may wonder - how can you tell which queries are more efficient than others?
@@ -110,19 +112,21 @@ Understanding your Query Plan
 
 Each query plan comes with four things:
 
-    starting cost - the start-up time before the first row can be returned.
-    total cost - the total cost to return all the rows.
-    rows - the number of rows returned.
-    width - the width of those rows in bytes.
+  1.  starting cost - the start-up time before the first row can be returned.
+  2.  total cost - the total cost to return all the rows.
+  3.  rows - the number of rows returned.
+  4.  width - the width of those rows in bytes.
 
 The cost, while not an exact number of milliseconds, corresponds to how much processing needs to be done to complete the query. The number is useful for determining how one query compares to another, similar to how Big O analysis can give us a sense for how efficient an algorithm is without concerning ourselves with how long an operation would literally take to complete. The rows refers to the number of rows discharged at that point of the plan (This is often less than the number scanned, as a result of filtering by WHERE). The width refers to the estimated average width (in bytes) of the rows output by the step you are on.
 
 While EXPLAIN is a handy tool you may sometimes need to run the query and see the query plan at the same time. To see how long your computer actually took to execute a query, you can use EXPLAIN ANALYZE. EXPLAIN ANALYZE will generate a query plan and run the query showing you the breakdown of the actual number of milliseconds it took to run. Here is a great tool for visualizing the break down of your Query Plan.
 
 Use the visualization tool above comparing both EXPLAIN and EXPLAIN ANALYZE with your previous query to find all the cats with a particular name. We recommend keeping this tool open in a separate tab for the rest of the project for whenever you need a visual breakdown of a query plan.
+
 Aside
 
 Your ANALYZE run times will not always be the same. ANALYZE can be used for benchmarking of a query but the statistics produced by ANALYZE are taken from a randomized sample of the table so they aren't concrete. Expect the measured time to differ slightly between runs. In general EXPLAIN should be what you use for query tuning.
+
 Building Bigger Tables
 
 At this point you know how to create and drop a table in SQL, as well as how to insert, update, and delete rows in a table. Now that you are familiar with the syntax of working in pure SQL, and the structure of tables in Postgres, you are now prepared for the next phase of this project.
@@ -149,6 +153,7 @@ Try running the following queries and see how the cost differs from when you had
     Find all the toys with a price of less than 10.
 
 When working with a larger database like this one query tuning,the process of making SQL queries more efficient, becomes especially important. So let's try it out!
+
 Phase 3: To Subquery or Not to Subquery?
 
 One of the most obvious cases where query planning comes into play is when choosing when to use a subquery and when to choose to create a larger table through JOINing. Joins and subqueries are both used to combine data from different tables into a single result.
@@ -231,6 +236,7 @@ If you'd rather run a single example from the test group, you can run it by appe
 bundle exec rspec spec/to_query_spec.rb:42
 
 To run sample queries open a separate terminal window and enter your database using the psql meowtime command. You can additionally add method calls to the bottom of your lib/ files and then run them.
+
 Phase 4: Indexing
 
 As you've gone over in the readings last night you can create an index within Postgres to optimize certain queries. To view the current indices on any given table by entering the database in psql database and running the command: \d #{tablename}. Running this command will show you a table's columns and any indices that currently on that table.

@@ -124,12 +124,22 @@ end
 
 
 def no_apples_for_blair
-  # Blair has was too many apple toys! Find the name of all the cats that
+  # Blair has too many apple toys! Find the name of all the cats that
   # own toys named `Apple` that aren't `Blair`. 
   # Order by cat name alphabetically.
 
   # DO NOT USE A SUBQUERY
   execute(<<-SQL)
+    SELECT 
+      cats.name
+    FROM 
+      cats 
+    JOIN 
+      cattoys ON cats.id = cattoys.cat_id
+    JOIN 
+      toys ON toys.id = cattoys.toy_id
+    WHERE toys.name = 'Apple' AND cats.name != 'Blair'
+    ORDER BY cats.name ASC;
 
   SQL
 end
@@ -142,7 +152,23 @@ def no_apples_for_blair_sub
 
   # USE A SUBQUERY
   execute(<<-SQL)
-
+    SELECT
+      name
+    FROM
+      cats
+    JOIN 
+      cattoys ON cats.id = cattoys.cat_id
+    WHERE
+      cats.name != 'Blair' AND
+      cattoys.toy_id IN (
+        SELECT
+          id
+        FROM
+          toys
+        WHERE
+          name = 'Apple'
+      )
+    ORDER BY cats.name ASC;
   SQL
 end
 
@@ -153,7 +179,17 @@ def toys_that_brendon_owns
 
   # DO NOT USE A SUBQUERY
   execute(<<-SQL)
-
+    SELECT
+      toys.name
+    FROM
+      toys
+    JOIN
+      cattoys ON toys.id = cattoys.toy_id
+    Join
+      cats ON cats.id = cattoys.cat_id
+    WHERE
+      cats.name = 'Brendon'
+    ORDER BY toys.name ASC;
   SQL
 end
 
@@ -163,21 +199,47 @@ def toys_that_brendon_owns_sub
 
   # USE A SUBQUERY
   execute(<<-SQL)
+    SELECT
+      toys.name
+    FROM
+      toys
+    JOIN
+      cattoys ON toys.id = cattoys.toy_id
+    WHERE
+      cattoys.cat_id IN (
+        SELECT
+          id 
+        FROM 
+          cats 
+        WHERE 
+          name = 'Brendon'
+      )
+    ORDER BY toys.name ASC;
 
   SQL
 end
 
 def price_like_shiny_mouse
   # There are multiple 'Shiny Mouse' toys that all have different prices.
-  # Your goal is to list all names and prices of the toys with the same prices 
-  # as the different 'Shiny Mouse' toys. 
+  # Your goal is to list all names and prices of the toys with the same price 
+  # as any of the 'Shiny Mouse' toys. 
 
   # Exclude the 'Shiny Mouse' toy from your results.
   # Order your alphabetically by toy name.
 
   # DO NOT USE A SUBQUERY
-  execute(<<-SQL) 
-  
+  execute(<<-SQL)
+    SELECT
+      toys.name, 
+      toys.price
+    FROM
+      toys
+    JOIN
+      toys AS shiny_mouse_toys
+      ON toys.price = shiny_mouse_toys.price
+    WHERE
+      shiny_mouse_toys.name = 'Shiny Mouse' AND
+      toys.name != 'Shiny Mouse'
   SQL
 end
 
@@ -190,8 +252,24 @@ def price_like_shiny_mouse_sub
   # Order your alphabetically by toy name.
 
   # USE A SUBQUERY
-  execute(<<-SQL) 
-
+  execute(<<-SQL)
+    SELECT
+      toys.name, 
+      toys.price
+    FROM
+      toys
+    WHERE
+      price IN (
+        SELECT
+          price
+        FROM
+          toys
+        WHERE
+          name = 'Shiny Mouse'
+      )AND
+      name != 'Shiny Mouse'
+    ORDER BY
+      name ASC;
   SQL
 end
 
@@ -203,6 +281,17 @@ def just_like_orange
 
   # DO NOT USE A SUBQUERY
   execute(<<-SQL)
+    SELECT  
+      cats.name, cats.breed 
+    FROM 
+      cats 
+    JOIN 
+      cats AS orange_breed_cats ON cats.breed = orange_breed_cats.breed 
+    WHERE 
+      orange_breed_cats.name = 'Orange' AND 
+      cats.name != 'Orange'
+    ORDER BY 
+      name ASC; 
 
   SQL
 end
@@ -215,7 +304,22 @@ def just_like_orange_sub
 
   # USE A SUBQUERY
   execute(<<-SQL)
-
+    SELECT
+      name, breed 
+    FROM 
+      cats
+    WHERE 
+      breed = (
+        SELECT 
+          breed
+        FROM 
+          cats
+        WHERE
+          name = 'Orange'
+      )
+      AND name != 'Orange'
+    ORDER BY 
+      name ASC;
   SQL
 end
 
@@ -229,7 +333,22 @@ def toys_that_jet_owns
 
   # DO NOT USE A SUBQUERY
   execute(<<-SQL)
-
+    SELECT
+      cats.name,
+      cats.toy
+    FROM
+      cats
+    JOIN
+      cattoys ON cats.id = cattoys.cat_id
+    JOIN
+      toys ON toys.id = cattoys.toy_id
+    JOIN
+      toys AS jettois ON toys.id = jettois.id
+    WHERE
+      name != 'Jet'
+      toys.id = jettois.id
+    ORDER BY
+      name ASC;
   SQL
 end
 
