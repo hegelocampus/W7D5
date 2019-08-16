@@ -333,9 +333,10 @@ def toys_that_jet_owns
 
   # DO NOT USE A SUBQUERY
   execute(<<-SQL)
-    SELECT
-      cats.name,
-      cats.toy
+    SELECT DISTINCT
+      *
+      /*cats.name,
+      toys.name*/
     FROM
       cats
     JOIN
@@ -345,10 +346,11 @@ def toys_that_jet_owns
     JOIN
       toys AS jettois ON toys.id = jettois.id
     WHERE
-      name != 'Jet'
-      toys.id = jettois.id
+      cats.name != 'Jet' AND
+      jettois.name = 'Jet'
+  
     ORDER BY
-      name ASC;
+      cats.name ASC;
   SQL
 end
 
@@ -360,6 +362,30 @@ def toys_that_jet_owns_sub
 
   # USE A SUBQUERY
   execute(<<-SQL)
-
+    SELECT
+      cats.name,
+      toys.name
+    From
+      cats
+    JOIN
+      cattoys ON cats.id = cattoys.cat_id
+    JOIN
+      toys ON toys.id = cattoys.toy_id
+    WHERE
+      cats.name != 'Jet' AND
+      toys.id IN (
+        SELECT
+          toys.id
+        FROM
+          toys
+        JOIN
+          cattoys ON toys.id = cattoys.toy_id
+        JOIN
+          cats ON cats.id = cattoys.cat_id
+        WHERE
+          cats.name = 'Jet'
+      )
+    ORDER BY
+      cats.name ASC;
   SQL
 end
