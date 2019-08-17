@@ -352,6 +352,23 @@ def toys_that_jet_owns
     ORDER BY
       cats.name ASC;
   SQL
+  SELECT DISTINCT
+      notjetcats.name, toys.name 
+    FROM 
+      toys 
+    JOIN 
+      cattoys as jetcatjoins ON toys.id = jetcatjoins.toy_id 
+    JOIN 
+      cats as jetcats ON jetcats.id= jetcatjoins.cat_id 
+    
+    JOIN 
+      cattoys as notjetjoins ON toys.id = notjetjoins.toy_id 
+    JOIN 
+      cats as notjetcats ON notjetcats.id = notjetjoins.cat_id  
+    WHERE 
+      jetcats.name = 'Jet' AND notjetcats.name != 'Jet'
+    ORDER BY
+      notjetcats.name ASC;
 end
 
 def toys_that_jet_owns_sub
